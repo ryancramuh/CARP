@@ -32,7 +32,7 @@ module CTRL_UNIT(
         case (OPCODE)
 
             7'b0100011: begin // Store
-                ALU_SRCB   = 2'b10;   // S-type offset
+                ALU_SRCB   = 2'b01;   // S-type offset
                 MEM_WRITE  = 1'b1;
                 IMM_SEL    = 3'b001;
             end
@@ -48,7 +48,6 @@ module CTRL_UNIT(
             7'b0110111: begin // LUI
                 ALU_FUN    = 4'b1001;
                 ALU_SRCA   = 1'b1;
-                ALU_SRCB   = 2'b01;   // U-type
                 RF_SEL     = 2'b11;
                 REG_WRITE  = 1'b1;
                 IMM_SEL    = 3'b011;
@@ -58,7 +57,7 @@ module CTRL_UNIT(
             7'b0010111: begin // AUIPC
                 ALU_FUN    = 4'b0000;
                 ALU_SRCA   = 1'b1;
-                ALU_SRCB   = 2'b01;
+                ALU_SRCB   = 2'b10;
                 RF_SEL     = 2'b11;
                 REG_WRITE  = 1'b1;
                 IMM_SEL    = 3'b011;
