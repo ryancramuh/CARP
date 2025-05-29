@@ -86,7 +86,6 @@ module OTTER(
 
         if (RST) begin
             FE_DE <= 'b0;
-            DE_EX <= 'b0;
             EX_MEM <= 'b0;
             MEM_WB <= 'b0;
         end
@@ -95,23 +94,6 @@ module OTTER(
             FE_DE.IR <= ir;
             FE_DE.PC <= pc_out;
             FE_DE.NEXT_PC <= nextpc;
-
-            DE_EX.IR <= FE_DE.IR;
-            DE_EX.PC <= FE_DE.PC;
-            DE_EX.NEXT_PC <= FE_DE.NEXT_PC;
-            DE_EX.SRC_A_SEL <= src_a_sel;
-            DE_EX.SRC_B_SEL <= src_b_sel;
-            DE_EX.REG_WRITE <= regwrite;
-            DE_EX.MEM_WRITE <= memwrite;
-            DE_EX.MEM_READ <= memread;
-            DE_EX.RF_MUX_SEL <= rf_sel;
-            DE_EX.ALU_CTRL <= alu_ctrl;
-            DE_EX.SRC_A_SEL <= src_a_sel;
-            DE_EX.SRC_B_SEL <= src_b_sel;
-            DE_EX.RS1 <= rs1;
-            DE_EX.RS2 <= rs2;
-            DE_EX.DEST_REG <= FE_DE.IR[11:7];
-            DE_EX.IMM <= imm;
 
             EX_MEM.IR <= DE_EX.IR;
             EX_MEM.PC <= DE_EX.PC;
@@ -149,6 +131,32 @@ module OTTER(
         end
     end
 
+    always_ff@(negedge CLK) begin
+        if (RST) begin
+            DE_EX <= 'b0;
+        end
+        else begin
+            DE_EX.IR <= FE_DE.IR;
+            DE_EX.PC <= FE_DE.PC;
+            DE_EX.NEXT_PC <= FE_DE.NEXT_PC;
+            DE_EX.SRC_A_SEL <= src_a_sel;
+            DE_EX.SRC_B_SEL <= src_b_sel;
+            DE_EX.REG_WRITE <= regwrite;
+            DE_EX.MEM_WRITE <= memwrite;
+            DE_EX.MEM_READ <= memread;
+            DE_EX.RF_MUX_SEL <= rf_sel;
+            DE_EX.ALU_CTRL <= alu_ctrl;
+            DE_EX.SRC_A_SEL <= src_a_sel;
+            DE_EX.SRC_B_SEL <= src_b_sel;
+            DE_EX.RS1 <= rs1;
+            DE_EX.RS2 <= rs2;
+            DE_EX.DEST_REG <= FE_DE.IR[11:7];
+            DE_EX.IMM <= imm;
+        end
+    end
+
+
+
     
     DUALPORT_MEM OTTER_MEM(
         .MEM_ADDR1(pc_out),                 // ADDRESS OF INSTRUCTION
@@ -169,8 +177,8 @@ module OTTER(
     REG_FILE OTTER_RF(
         
         .CLK(CLK),
-        .REG_ADDR1(DE_EX.IR[19:15]),
-        .REG_ADDR2(DE_EX.IR[24:20]),
+        .REG_ADDR1(FE_DE.IR[19:15]),
+        .REG_ADDR2(FE_DE.IR[24:20]),
         .WRITE_EN(MEM_WB.REG_WRITE),
         .WRITE_ADDR(MEM_WB.DEST_REG),
         .WRITE_DATA(rf_rd),
@@ -266,7 +274,7 @@ module OTTER(
     
     MUX4T1 RF_MUX(
 
-        .SEL(rf_sel),
+        .SEL(rf_mux_sel),
         .D0(rf_nextPC),
         .D1(32'h0000_0000),
         .D2(memout),

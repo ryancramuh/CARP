@@ -17,7 +17,9 @@ void Vtb_OTTER___024root___eval_triggers__act(Vtb_OTTER___024root* vlSelf) {
     // Body
     vlSelfRef.__VactTriggered.set(0U, ((IData)(vlSelfRef.tb_OTTER__DOT__CLK) 
                                        & (~ (IData)(vlSelfRef.__Vtrigprevexpr___TOP__tb_OTTER__DOT__CLK__0))));
-    vlSelfRef.__VactTriggered.set(1U, vlSelfRef.__VdlySched.awaitingCurrentTime());
+    vlSelfRef.__VactTriggered.set(1U, ((~ (IData)(vlSelfRef.tb_OTTER__DOT__CLK)) 
+                                       & (IData)(vlSelfRef.__Vtrigprevexpr___TOP__tb_OTTER__DOT__CLK__0)));
+    vlSelfRef.__VactTriggered.set(2U, vlSelfRef.__VdlySched.awaitingCurrentTime());
     vlSelfRef.__Vtrigprevexpr___TOP__tb_OTTER__DOT__CLK__0 
         = vlSelfRef.tb_OTTER__DOT__CLK;
 #ifdef VL_DEBUG

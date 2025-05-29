@@ -39,8 +39,6 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb_OTTER___024root final : public VerilatedM
     IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__s_type;
     IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__b_type;
     IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__j_type;
-    IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__rs1;
-    IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__rs2;
     IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__src_a_out;
     IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__src_b_out;
     IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__alu_result;
@@ -57,11 +55,11 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb_OTTER___024root final : public VerilatedM
     VlWide<10>/*305:0*/ tb_OTTER__DOT__UUT__DOT__MEM_WB;
     VlUnpacked<IData/*31:0*/, 16384> tb_OTTER__DOT__UUT__DOT__OTTER_MEM__DOT__memory;
     VlUnpacked<IData/*31:0*/, 32> tb_OTTER__DOT__UUT__DOT__OTTER_RF__DOT__register;
-    VlUnpacked<CData/*0:0*/, 3> __Vm_traceActivity;
+    VlUnpacked<CData/*0:0*/, 4> __Vm_traceActivity;
     VlDelayScheduler __VdlySched;
     VlTriggerVec<1> __VstlTriggered;
-    VlTriggerVec<2> __VactTriggered;
-    VlTriggerVec<2> __VnbaTriggered;
+    VlTriggerVec<3> __VactTriggered;
+    VlTriggerVec<3> __VnbaTriggered;
 
     // INTERNAL VARIABLES
     Vtb_OTTER__Syms* const vlSymsp;
