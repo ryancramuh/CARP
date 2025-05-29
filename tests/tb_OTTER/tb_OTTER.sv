@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module OTTER_TB();
+module tb_OTTER();
 
     logic CLK;
     logic RST;
@@ -29,6 +29,11 @@ module OTTER_TB();
         .CLK(CLK),
         .RST(RST)
     );
+
+    initial begin
+        $dumpfile("tb_OTTER.vcd");
+        $dumpvars(2, tb_OTTER);
+    end
     
     initial begin
         #5 CLK = 1'b0;

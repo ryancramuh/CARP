@@ -14,19 +14,19 @@ module MUX4T1(
     always_comb begin
         case(SEL) 
             2'b00: begin
-                DOUT <= D0;
+                DOUT = D0;
             end
             2'b01: begin
-                DOUT <= D1;
+                DOUT = D1;
             end
             2'b10: begin
-                DOUT <= D2;
+                DOUT = D2;
             end
             2'b11: begin
-                DOUT <= D3;
+                DOUT = D3;
             end
             default: begin
-                DOUT <= D0;
+                DOUT = D0;
             end
         endcase
     end

@@ -19,7 +19,7 @@ module OTTER(
         logic [31:0] RS1;
         logic [31:0] RS2;
         logic [31:0] IMM;
-        logic [1:0] SRC_A_SEL;
+        logic SRC_A_SEL;
         logic [1:0] SRC_B_SEL;
         //logic [1:0]
         //logic [1:0]
@@ -69,6 +69,17 @@ module OTTER(
     logic [31:0] alu_result;
 
     logic [31:0] memout;
+    logic memerr;
+    logic zero;
+
+    logic [1:0] rf_mux_sel;
+    assign rf_mux_sel = MEM_WB.RF_MUX_SEL;
+    logic [31:0] rf_nextPC;
+    assign rf_nextPC = MEM_WB.NEXT_PC;
+    logic [31:0] rf_alu_result;
+    assign rf_alu_result = MEM_WB.ALU_RESULT;
+    logic [31:0] rf_rd;
+    assign rf_rd = MEM_WB.DEST_REG_DATA;
 
 
     always_ff @ (posedge CLK) begin
@@ -119,6 +130,8 @@ module OTTER(
             EX_MEM.RS2 <= DE_EX.RS2;
             EX_MEM.DEST_REG <= DE_EX.DEST_REG;
 
+            MEM_WB.PC <= EX_MEM.PC;
+            MEM_WB.NEXT_PC <= EX_MEM.NEXT_PC;
             MEM_WB.ERR <= memerr;
             MEM_WB.SRC_A_SEL <= EX_MEM.SRC_A_SEL; 
             MEM_WB.SRC_B_SEL <= EX_MEM.SRC_B_SEL;
@@ -156,11 +169,11 @@ module OTTER(
     REG_FILE OTTER_RF(
         
         .CLK(CLK),
-        .REG_ADDR1(FE_DE.IR[19:15]),
-        .REG_ADDR2(FE_DE.IR[24:20]),
+        .REG_ADDR1(DE_EX.IR[19:15]),
+        .REG_ADDR2(DE_EX.IR[24:20]),
         .WRITE_EN(MEM_WB.REG_WRITE),
         .WRITE_ADDR(MEM_WB.DEST_REG),
-        .WRITE_DATA(MEM_WB.DEST_REG_DATA),
+        .WRITE_DATA(rf_rd),
         .REG_1_DATA(rs1),
         .REG_2_DATA(rs2)
     
@@ -169,7 +182,7 @@ module OTTER(
 
     MUX4T1 PC_MUX(
 
-        .SEL(1'b00),
+        .SEL(2'b00),
         .D0(nextpc),
         .D1(32'h0000_0000),
         .D2(32'h0000_0000),
@@ -245,19 +258,20 @@ module OTTER(
         .SRC_A(src_a_out),
         .SRC_B(src_b_out),
         .ALU_CTRL(DE_EX.ALU_CTRL),
-        .RESULT(alu_result)
+        .RESULT(alu_result),
+        .ZERO(zero)
 
     );
 
-
+    
     MUX4T1 RF_MUX(
 
-        .SEL(MEM_WB.RF_MUX_SEL),
-        .D0(MEM_WB.NEXT_PC),
+        .SEL(rf_sel),
+        .D0(rf_nextPC),
         .D1(32'h0000_0000),
         .D2(memout),
-        .D3(MEM_WB.ALU_RESULT),
-        .DOUT(MEM_WB.DEST_REG_DATA)
+        .D3(rf_alu_result),
+        .DOUT(rf_rd)
 
     );
 

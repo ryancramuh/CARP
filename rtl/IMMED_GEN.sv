@@ -22,22 +22,22 @@ module IMMED_GEN(
     always_comb begin
         case(IMM_SEL)
             3'b000: begin
-                IMM <= I_TYPE;
+                IMM = I_TYPE;
             end
             3'b001: begin
-                IMM <= S_TYPE;
+                IMM = S_TYPE;
             end
             3'b010: begin
-                IMM <= B_TYPE;
+                IMM = B_TYPE;
             end
             3'b011: begin
-                IMM <= U_TYPE;
+                IMM = U_TYPE;
             end
             3'b100: begin
-                IMM <= J_TYPE;
+                IMM = J_TYPE;
             end
             default: begin
-                IMM <= I_TYPE;
+                IMM = I_TYPE;
             end
         endcase
     end

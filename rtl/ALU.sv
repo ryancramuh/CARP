@@ -18,8 +18,8 @@ module ALU(
     4'b0101: begin RESULT = SRC_A >> SRC_B[4:0]; end             // SRL
     4'b0001: begin RESULT = SRC_A << SRC_B[4:0]; end             // SLL
     4'b1101: begin RESULT = $signed(SRC_A) >>> SRC_B[4:0]; end   // SRA
-    4'b0010: begin RESULT = $signed(SRC_A) < $signed(SRC_B); end // SLT
-    4'b0011: begin RESULT = SRC_A < SRC_B; end                   // SLTU
+    4'b0010: begin RESULT = {31'b0_0000_0000_0000_0000_0000_0000_0000,($signed(SRC_A) < $signed(SRC_B))}; end // SLT
+    4'b0011: begin RESULT = {31'b0_0000_0000_0000_0000_0000_0000_0000,(SRC_A < SRC_B)}; end                   // SLTU
     4'b1001: begin RESULT = SRC_A; end                           // LUI (copy)
     default: begin RESULT = 32'd0; end
     endcase
