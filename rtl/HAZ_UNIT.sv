@@ -7,6 +7,7 @@ module HAZ_UNIT(
     input [4:0]  RD_W,       // Destination register in WB
     input [4:0]  RS1,        // Source register 1 in decode
     input [4:0]  RS2,        // Source register 2 in decode
+    input        MEM_WRITE_DE,
     input        MEM_READ_EX, // Is EX instruction a load?
     input        MEM_READ_WB, // Is WB instruction a load?
     input        MEM_WRITE_EX,
@@ -45,8 +46,13 @@ module HAZ_UNIT(
             FWD_A_SEL = 2'b11;              // Forward load result from WB (memout)
 
         // Forwarding B
-        if (MEM_FWD2)
-            FWD_B_SEL = 2'b01;
+        if (MEM_FWD2) begin
+            if(MEM_WRITE_DE) begin
+                SW_SEL = 2'b10;
+                FWD_B_SEL = 2'b00;
+            end
+            else FWD_B_SEL = 2'b01;
+        end
         else if (WB_FWD2 && !MEM_READ_WB) begin
             if(MEM_WRITE_EX) begin
                 FWD_A_SEL = 2'b00; 

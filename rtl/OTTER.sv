@@ -91,6 +91,7 @@ module OTTER(
     logic stall;
     logic flush;
     logic stall_mem_read;
+    logic stall_mem_write;
     
     always_ff @ (posedge CLK) begin
 
@@ -180,6 +181,7 @@ module OTTER(
             MEM_WB.DEST_REG <= EX_MEM.DEST_REG;
             MEM_WB.ALU_RESULT <= EX_MEM.ALU_RESULT;
             stall_mem_read <= memread;
+            stall_mem_write <= memwrite;
         end
     end
 
@@ -236,7 +238,7 @@ module OTTER(
         .D0(src_b_out),
         .D1(fwd_b_out),
         .D2(reg_result),
-        .D3(32'h0000_0000),
+        .D3(MEM_WB.ALU_RESULT),
         .DOUT(din2)
     );
     
@@ -330,6 +332,7 @@ module OTTER(
         .RS2(FE_DE.IR[24:20]),
         .MEM_READ_EX(stall_mem_read),
         .MEM_READ_WB(MEM_WB.MEM_READ),
+        .MEM_WRITE_DE(memwrite), // logic stall_mem_write
         .MEM_WRITE_EX(EX_MEM.MEM_WRITE),
         .FWD_A_SEL(fwd_a_sel),
         .FWD_B_SEL(fwd_b_sel),

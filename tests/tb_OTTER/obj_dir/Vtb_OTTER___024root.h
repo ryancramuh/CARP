@@ -34,6 +34,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb_OTTER___024root final : public VerilatedM
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__stall;
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__flush;
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__stall_mem_read;
+    CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__stall_mem_write;
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_MEM__DOT__IO_WR;
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_HU__DOT__MEM_FWD1;
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_HU__DOT__MEM_FWD2;
