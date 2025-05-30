@@ -16,7 +16,7 @@ module PC(
             PC_OUT <= PC_IN;
         end 
         else
-            PC_OUT <= PC_IN;
+            PC_OUT <= PC_OUT;
     end
 
 endmodule

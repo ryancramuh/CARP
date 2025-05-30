@@ -9,10 +9,13 @@ module HAZ_UNIT(
     input [4:0]  RS2,        // Source register 2 in decode
     input        MEM_READ_EX, // Is EX instruction a load?
     input        MEM_READ_WB, // Is WB instruction a load?
+    input        MEM_WRITE_EX,
     output logic [1:0] FWD_A_SEL,
     output logic [1:0] FWD_B_SEL,
+    output logic [1:0] SW_SEL,
     output logic STALL,
     output logic FLUSH
+    
 );
 
     logic MEM_FWD1, MEM_FWD2, WB_FWD1, WB_FWD2;
@@ -30,20 +33,26 @@ module HAZ_UNIT(
         FWD_B_SEL = 2'b00;
         STALL     = 1'b0;
         FLUSH     = 1'b0;
+        SW_SEL    = 2'b00;
 
         // Forwarding A
         if (MEM_FWD1)
             FWD_A_SEL = 2'b01;              // Forward from EX
         else if (WB_FWD1 && !MEM_READ_WB)
-            FWD_A_SEL = 2'b10;              // Forward ALU result from WB
+                FWD_A_SEL = 2'b10; 
+                         // Forward ALU result from WB
         else if (WB_FWD1 && MEM_READ_WB)
             FWD_A_SEL = 2'b11;              // Forward load result from WB (memout)
 
         // Forwarding B
         if (MEM_FWD2)
             FWD_B_SEL = 2'b01;
-        else if (WB_FWD2 && !MEM_READ_WB)
-            FWD_B_SEL = 2'b10;
+        else if (WB_FWD2 && !MEM_READ_WB) begin
+            if(MEM_WRITE_EX) begin
+                FWD_A_SEL = 2'b00; 
+            end
+            SW_SEL = 2'b10;
+        end
         else if (WB_FWD2 && MEM_READ_WB)
             FWD_B_SEL = 2'b11;
 
@@ -51,6 +60,7 @@ module HAZ_UNIT(
         if (load_use)
             STALL = 1'b1;
     end
+
 
 endmodule
 
