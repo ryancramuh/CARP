@@ -11,13 +11,56 @@ module HAZ_UNIT(
     input        MEM_READ_EX, // Is EX instruction a load?
     input        MEM_READ_WB, // Is WB instruction a load?
     input        MEM_WRITE_EX,
+    input        JUMP,
+    input        [31:0] BRANCH_ARG1,
+    input        [31:0] BRANCH_ARG2,
+    input        BRANCH,
+    input        [2:0] BRANCH_TYPE,
+    output logic BRANCH_TAKEN,
     output logic [1:0] FWD_A_SEL,
     output logic [1:0] FWD_B_SEL,
     output logic [1:0] SW_SEL,
     output logic STALL,
     output logic FLUSH
     
-);
+);  
+    
+    always_comb begin
+        BRANCH_TAKEN = 1'b0;
+        FLUSH = 1'b0;
+        if(BRANCH) begin
+            case(BRANCH_TYPE)
+                3'b000: begin
+                    if(BRANCH_ARG1 == BRANCH_ARG2) BRANCH_TAKEN = 1'b1; // BEQ
+                    else FLUSH = 1'b1;
+                end
+                3'b001: begin // BNE
+                        if(BRANCH_ARG1 != BRANCH_ARG2) BRANCH_TAKEN = 1'b1; // BEQ
+                        else FLUSH = 1'b1;
+                end
+                3'b010: begin 
+                        if(BRANCH_ARG1 < BRANCH_ARG2) BRANCH_TAKEN = 1'b1; // BLT
+                        else FLUSH = 1'b1;
+                end
+                3'b011: begin
+                     if (BRANCH_ARG1 >= BRANCH_ARG2) BRANCH_TAKEN = 1'b1; // BGE
+                     else FLUSH = 1'b1;
+                end
+                3'b100: begin
+                    if ($unsigned(BRANCH_ARG1) < $unsigned(BRANCH_ARG2)) BRANCH_TAKEN = 1'b1; // BLTU
+                    else FLUSH = 1'b1;
+                end
+                3'b101: begin
+                    if ($unsigned(BRANCH_ARG1) >= $unsigned(BRANCH_ARG2)) BRANCH_TAKEN = 1'b1; // BGEU
+                    else FLUSH = 1'b1;
+                end
+                default: BRANCH_TAKEN = 1'b0;
+            endcase
+            
+        end
+        else 
+            BRANCH_TAKEN = 1'b0;
+    end
 
     logic MEM_FWD1, MEM_FWD2, WB_FWD1, WB_FWD2;
 
@@ -33,7 +76,6 @@ module HAZ_UNIT(
         FWD_A_SEL = 2'b00;
         FWD_B_SEL = 2'b00;
         STALL     = 1'b0;
-        FLUSH     = 1'b0;
         SW_SEL    = 2'b00;
 
         // Forwarding A

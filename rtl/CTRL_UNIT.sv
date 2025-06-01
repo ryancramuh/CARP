@@ -8,14 +8,15 @@ module CTRL_UNIT(
     output logic REG_WRITE,
     output logic MEM_WRITE,
     output logic MEM_READ2,
-    //output logic BRANCH,
-    //output logic JUMP,
+    output logic BRANCH,
+    output logic JUMP,
     output logic [1:0] RF_SEL,
     output logic [3:0] ALU_FUN,
     output logic ALU_SRCA,
     output logic [1:0] ALU_SRCB,       
     output logic [2:0] PC_SRC,
-    output logic [2:0] IMM_SEL
+    output logic [2:0] IMM_SEL,
+    output logic [2:0] BR_TYPE
 );
 
     always_comb begin
@@ -28,6 +29,11 @@ module CTRL_UNIT(
         MEM_READ2  = 1'b0;
         RF_SEL     = 2'b00;
         IMM_SEL    = 3'b00;
+        JUMP = 1'b0;
+        BR_TYPE = 3'b000;
+        BRANCH = 1'b0;
+        PC_SRC = 3'b000;
+
 
         case (OPCODE)
 
@@ -88,7 +94,7 @@ module CTRL_UNIT(
                 REG_WRITE  = 1'b1;
             end
 
-            /*
+            
             7'b1100011: begin // Branch (B-type)
                 BRANCH     = 1'b1;
                 IMM_SEL    = 3'b010;
@@ -113,7 +119,7 @@ module CTRL_UNIT(
                 IMM_SEL    = 3'b100;
             end
             7'b1100111: begin // JALR
-                RF_SEL = 2'b00;
+                RF_SEL = 2'b00;        // PC + 4
                 ALU_SRCB = 2'b01;      // I-type imm
                 ALU_SRCA = 1'b0;       // rs1
                 REG_WRITE = 1'b1;
@@ -121,7 +127,7 @@ module CTRL_UNIT(
                 PC_SRC = 3'd3;
                 IMM_SEL    = 3'b100;
             end 
-            */
+            
             default: ; // do nothing
         endcase
     end

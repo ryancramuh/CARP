@@ -36,6 +36,13 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb_OTTER___024root final : public VerilatedM
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__stall_mem_read;
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__stall_mem_write;
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_MEM__DOT__IO_WR;
+    CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_CU__DOT__BRANCH;
+    CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_CU__DOT__JUMP;
+    CData/*2:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_CU__DOT__BR_TYPE;
+    CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_HU__DOT__JUMP;
+    CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_HU__DOT__BRANCH;
+    CData/*2:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_HU__DOT__BRANCH_TYPE;
+    CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_HU__DOT__BRANCH_TAKEN;
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_HU__DOT__MEM_FWD1;
     CData/*0:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_HU__DOT__MEM_FWD2;
     CData/*0:0*/ __VstlFirstIteration;
@@ -62,6 +69,8 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb_OTTER___024root final : public VerilatedM
     IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_MEM__DOT__ioIn_buffer;
     IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_RF__DOT__unnamedblk1__DOT__i;
     IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_IG__DOT__I_TYPE;
+    IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_HU__DOT__BRANCH_ARG1;
+    IData/*31:0*/ tb_OTTER__DOT__UUT__DOT__OTTER_HU__DOT__BRANCH_ARG2;
     IData/*31:0*/ __VactIterCount;
     VlWide<11>/*337:0*/ tb_OTTER__DOT__UUT__DOT__FE_DE;
     VlWide<11>/*337:0*/ tb_OTTER__DOT__UUT__DOT__DE_EX;

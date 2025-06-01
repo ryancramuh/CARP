@@ -308,7 +308,10 @@ module OTTER(
         .ALU_SRCA(src_a_sel),
         .ALU_SRCB(src_b_sel),
         .PC_SRC(pc_sel),
-        .IMM_SEL(imm_sel)
+        .IMM_SEL(imm_sel),
+        .BRANCH(),
+        .BR_TYPE(),
+        .JUMP()
 
     );
     
@@ -336,6 +339,12 @@ module OTTER(
         .MEM_WRITE_EX(EX_MEM.MEM_WRITE),
         .FWD_A_SEL(fwd_a_sel),
         .FWD_B_SEL(fwd_b_sel),
+        .JUMP(),
+        .BRANCH(),
+        .BRANCH_ARG1(),
+        .BRANCH_ARG2(),
+        .BRANCH_TYPE(),
+        .BRANCH_TAKEN(),
         .SW_SEL(sw_sel),
         .STALL(stall),
         .FLUSH(flush)
