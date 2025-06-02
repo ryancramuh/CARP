@@ -13,9 +13,13 @@ sw x8,0(x9)
 lw x11,0(x9)
 addi x11, x11, 5
 lui x12, 6
+
+start:
+
 sw x12,0(x9)
 lw x12,0(x9)
 lw x7,0(x12)
 addi x12, x12, 8
 lw x9,0(x12)
 add x9, x9, x8
+j start

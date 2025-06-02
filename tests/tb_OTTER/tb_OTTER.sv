@@ -32,7 +32,7 @@ module tb_OTTER();
 
     initial begin
         $dumpfile("tb_OTTER.vcd");
-        $dumpvars(2, tb_OTTER);
+        $dumpvars(0, tb_OTTER);
     end
     
     initial begin
@@ -46,7 +46,7 @@ module tb_OTTER();
     
     always begin
         #200 RST = 1'b0;
-        #2700 
+      #100000 
             $finish;
     end
      

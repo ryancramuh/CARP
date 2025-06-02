@@ -14,7 +14,7 @@ module CTRL_UNIT(
     output logic [3:0] ALU_FUN,
     output logic ALU_SRCA,
     output logic [1:0] ALU_SRCB,       
-    output logic [2:0] PC_SRC,
+    output logic [1:0] PC_SRC,
     output logic [2:0] IMM_SEL,
     output logic [2:0] BR_TYPE
 );
@@ -32,7 +32,7 @@ module CTRL_UNIT(
         JUMP = 1'b0;
         BR_TYPE = 3'b000;
         BRANCH = 1'b0;
-        PC_SRC = 3'b000;
+        PC_SRC = 2'b00;
 
 
         case (OPCODE)
@@ -98,6 +98,8 @@ module CTRL_UNIT(
             7'b1100011: begin // Branch (B-type)
                 BRANCH     = 1'b1;
                 IMM_SEL    = 3'b010;
+                PC_SRC = 2'd1;
+                
                 case (FUNC3)
                     3'b000: BR_TYPE = 3'b000; // BEQ
                     3'b001: BR_TYPE = 3'b001; // BNE
@@ -115,7 +117,7 @@ module CTRL_UNIT(
                 ALU_SRCA = 1'b1;       // U-type imm unused
                 REG_WRITE = 1'b1;
                 JUMP = 1'b1;
-                PC_SRC = 3'd2;
+                PC_SRC = 2'd2;
                 IMM_SEL    = 3'b100;
             end
             7'b1100111: begin // JALR
@@ -124,7 +126,7 @@ module CTRL_UNIT(
                 ALU_SRCA = 1'b0;       // rs1
                 REG_WRITE = 1'b1;
                 JUMP = 1'b1;
-                PC_SRC = 3'd3;
+                PC_SRC = 2'd3;
                 IMM_SEL    = 3'b100;
             end 
             

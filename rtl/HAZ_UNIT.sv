@@ -39,11 +39,11 @@ module HAZ_UNIT(
                         else FLUSH = 1'b1;
                 end
                 3'b010: begin 
-                        if(BRANCH_ARG1 < BRANCH_ARG2) BRANCH_TAKEN = 1'b1; // BLT
+                        if($signed(BRANCH_ARG1) < $signed(BRANCH_ARG2)) BRANCH_TAKEN = 1'b1; // BLT
                         else FLUSH = 1'b1;
                 end
                 3'b011: begin
-                     if (BRANCH_ARG1 >= BRANCH_ARG2) BRANCH_TAKEN = 1'b1; // BGE
+                     if ($signed(BRANCH_ARG1) >= $signed(BRANCH_ARG2)) BRANCH_TAKEN = 1'b1; // BGE
                      else FLUSH = 1'b1;
                 end
                 3'b100: begin

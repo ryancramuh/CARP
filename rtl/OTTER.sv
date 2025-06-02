@@ -34,6 +34,10 @@ module OTTER(
         logic [31:0] DEST_REG_DATA;
         logic ERR;
         logic [31:0] DIN2;
+        logic JUMP;
+        logic BRANCH;
+        logic [2:0] BR_TYPE;
+        logic [1:0] PC_SEL;
 
     } pipeline_reg_t;
 
@@ -44,8 +48,15 @@ module OTTER(
     logic [31:0] pc_in;
     logic [31:0] pc_out; // pc out
     logic [31:0] nextpc;
-
-    assign nextpc = pc_out + 4;
+    logic [1:0] pc_sel_final;
+    always_comb begin
+        nextpc = pc_out + 4;
+        pc_sel_final = EX_MEM.PC_SEL;
+        if(flush) begin
+            pc_sel_final = 2'b00;
+            nextpc = EX_MEM.PC+4;
+        end
+    end
 
     logic [31:0] u_type;
     logic [31:0] i_type;
@@ -54,7 +65,7 @@ module OTTER(
     logic [31:0] j_type;
 
     logic [31:0] rs1, rs2;
-    logic [2:0] pc_sel;
+    logic [1:0] pc_sel;
     logic src_a_sel;
     logic [1:0] src_b_sel;
     logic [3:0] alu_ctrl;
@@ -64,6 +75,10 @@ module OTTER(
     logic [1:0] rf_sel;
     logic [2:0] imm_sel;
     logic [31:0] imm;
+    logic branch;
+    logic jump;
+    logic [2:0] br_type;
+    logic branch_taken;
 
     logic [31:0] src_a_out;
     logic [31:0] src_b_out;
@@ -92,6 +107,8 @@ module OTTER(
     logic flush;
     logic stall_mem_read;
     logic stall_mem_write;
+
+    logic [31:0] jalr_addr, jal_addr, branch_addr;
     
     always_ff @ (posedge CLK) begin
 
@@ -122,6 +139,7 @@ module OTTER(
             EX_MEM.RS2 <= DE_EX.RS2;
             EX_MEM.DEST_REG <= DE_EX.DEST_REG;
             EX_MEM.DIN2 <= din2;
+            EX_MEM.PC_SEL <= DE_EX.PC_SEL;
 
             MEM_WB.PC <= EX_MEM.PC;
             MEM_WB.NEXT_PC <= EX_MEM.NEXT_PC;
@@ -141,7 +159,9 @@ module OTTER(
             MEM_WB.ALU_RESULT <= EX_MEM.ALU_RESULT;
         end
         else begin
-
+            jalr_addr <= JALR;
+            jal_addr <= JAL;
+            branch_addr <= BRANCH;
             FE_DE.IR <= ir;
             FE_DE.PC <= pc_out;
             FE_DE.NEXT_PC <= nextpc;
@@ -163,6 +183,11 @@ module OTTER(
             EX_MEM.RS2 <= DE_EX.RS2;
             EX_MEM.DEST_REG <= DE_EX.DEST_REG;
             EX_MEM.DIN2 <= din2;
+            EX_MEM.BRANCH <= DE_EX.BRANCH;
+            EX_MEM.BR_TYPE <= DE_EX.BR_TYPE;
+            EX_MEM.JUMP <= DE_EX.JUMP;
+            EX_MEM.PC_SEL <= DE_EX.PC_SEL;
+
 
             MEM_WB.PC <= EX_MEM.PC;
             MEM_WB.NEXT_PC <= EX_MEM.NEXT_PC;
@@ -182,6 +207,10 @@ module OTTER(
             MEM_WB.ALU_RESULT <= EX_MEM.ALU_RESULT;
             stall_mem_read <= memread;
             stall_mem_write <= memwrite;
+
+            MEM_WB.BRANCH <= EX_MEM.BRANCH;
+            MEM_WB.BR_TYPE <= EX_MEM.BR_TYPE;
+            MEM_WB.JUMP <= EX_MEM.JUMP;
         end
     end
 
@@ -206,6 +235,10 @@ module OTTER(
             DE_EX.RS2 <= 32'h0000_0000;
             DE_EX.DEST_REG <= 5'b00000;
             DE_EX.IMM <= 32'h0000_0000;
+            DE_EX.BR_TYPE <= 3'b000;
+            DE_EX.BRANCH <= 1'b0;
+            DE_EX.JUMP <= 1'b0;
+            DE_EX.PC_SEL <= 2'b00;
         end
         else begin
             DE_EX.IR <= FE_DE.IR;
@@ -220,10 +253,14 @@ module OTTER(
             DE_EX.ALU_CTRL <= alu_ctrl;
             DE_EX.SRC_A_SEL <= src_a_sel;
             DE_EX.SRC_B_SEL <= src_b_sel;
+            DE_EX.BRANCH <= branch;
+            DE_EX.BR_TYPE <= br_type;
+            DE_EX.JUMP <= jump;
             DE_EX.RS1 <= rs1;
             DE_EX.RS2 <= rs2;
             DE_EX.DEST_REG <= FE_DE.IR[11:7];
             DE_EX.IMM <= imm;
+            DE_EX.PC_SEL <= pc_sel;
         end
     end
 
@@ -235,7 +272,7 @@ module OTTER(
 
     MUX4T1 SW_MUX(
         .SEL(sw_sel),
-        .D0(src_b_out),
+        .D0(DE_EX.RS2),
         .D1(fwd_b_out),
         .D2(reg_result),
         .D3(MEM_WB.ALU_RESULT),
@@ -271,17 +308,23 @@ module OTTER(
     
     );
 
+    logic [31:0] JAL, JALR, BRANCH;
+
+    assign JAL = DE_EX.PC + DE_EX.IMM;
+    assign JALR = (DE_EX.IMM + fwd_a_out) & ~1;
+    assign BRANCH = DE_EX.NEXT_PC + DE_EX.IMM;
 
     MUX4T1 PC_MUX(
 
-        .SEL(2'b00),
+        .SEL(pc_sel_final),
         .D0(nextpc),
-        .D1(32'h0000_0000),
-        .D2(32'h0000_0000),
-        .D3(32'h0000_0000),
+        .D1(branch_addr),
+        .D2(jal_addr),
+        .D3(jalr_addr),
         .DOUT(pc_in)
 
     );
+
 
 
     PC OTTER_PC(
@@ -294,6 +337,7 @@ module OTTER(
 
     );
     
+   
 
     CTRL_UNIT OTTER_CU(
 
@@ -309,9 +353,9 @@ module OTTER(
         .ALU_SRCB(src_b_sel),
         .PC_SRC(pc_sel),
         .IMM_SEL(imm_sel),
-        .BRANCH(),
-        .BR_TYPE(),
-        .JUMP()
+        .BRANCH(branch),
+        .BR_TYPE(br_type),
+        .JUMP(jump)
 
     );
     
@@ -327,6 +371,8 @@ module OTTER(
 
     
 
+    
+
     HAZ_UNIT OTTER_HU (
         .IR(FE_DE.IR),
         .RD_M(EX_MEM.DEST_REG),
@@ -339,12 +385,12 @@ module OTTER(
         .MEM_WRITE_EX(EX_MEM.MEM_WRITE),
         .FWD_A_SEL(fwd_a_sel),
         .FWD_B_SEL(fwd_b_sel),
-        .JUMP(),
-        .BRANCH(),
-        .BRANCH_ARG1(),
-        .BRANCH_ARG2(),
-        .BRANCH_TYPE(),
-        .BRANCH_TAKEN(),
+        .JUMP(DE_EX.JUMP),
+        .BRANCH(DE_EX.BRANCH),
+        .BRANCH_ARG1(fwd_a_out),
+        .BRANCH_ARG2(fwd_b_out),
+        .BRANCH_TYPE(DE_EX.BR_TYPE),
+        .BRANCH_TAKEN(branch_taken),
         .SW_SEL(sw_sel),
         .STALL(stall),
         .FLUSH(flush)
