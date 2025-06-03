@@ -1,8 +1,8 @@
 {
-    "DESIGN_NAME": "WB_RAM2K",
+    "DESIGN_NAME": "OTTER",
     "VERILOG_FILES": "dir::/rtl/*.sv",
     "CLOCK_PERIOD": 100, 
-    "CLOCK_PORT": "clk_i",
+    "CLOCK_PORT": "clk",
     "FP_PDN_SKIPTRIM": true,
     "RUN_POST_GRT_RESIZER_TIMING": true,
     "RUN_POST_GRT_DESIGN_REPAIR": true,
