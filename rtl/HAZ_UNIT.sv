@@ -79,8 +79,15 @@ module HAZ_UNIT(
         SW_SEL    = 2'b00;
 
         // Forwarding A
-        if (MEM_FWD1)
+        if (MEM_FWD1) begin
+            if(WB_FWD1 && MEM_WRITE_DE)
+                SW_SEL = 2'b11;
             FWD_A_SEL = 2'b01;              // Forward from EX
+        end
+        else if (WB_FWD1 && MEM_WRITE_EX) begin
+                SW_SEL = 2'b10;
+                FWD_A_SEL = 2'b10;
+        end
         else if (WB_FWD1 && !MEM_READ_WB)
                 FWD_A_SEL = 2'b10; 
                          // Forward ALU result from WB
@@ -93,9 +100,14 @@ module HAZ_UNIT(
                 SW_SEL = 2'b10;
                 FWD_B_SEL = 2'b00;
             end
+            if(MEM_WRITE_EX) begin
+                if(WB_FWD1)
+                    SW_SEL = 2'b11;
+                FWD_B_SEL = 2'b00;
+            end
             else FWD_B_SEL = 2'b01;
         end
-        else if (WB_FWD2 && !MEM_READ_WB) begin
+        else if (WB_FWD2 && !MEM_READ_WB && !MEM_WRITE_DE) begin
             if(MEM_WRITE_EX) begin
                 FWD_A_SEL = 2'b00; 
             end

@@ -117,6 +117,47 @@ module OTTER(
             EX_MEM <= 'b0;
             MEM_WB <= 'b0;
         end
+        else if (branch_taken) begin
+            FE_DE.IR <= 32'h00000013;  // NOP (ADDI x0, x0, 0)
+            FE_DE.PC <= 0;
+            FE_DE.NEXT_PC <= 0;
+            EX_MEM.IR <= DE_EX.IR;
+            EX_MEM.PC <= DE_EX.PC;
+            EX_MEM.NEXT_PC <= DE_EX.NEXT_PC;
+            EX_MEM.ALU_RESULT <= alu_result;
+            EX_MEM.SRC_A_SEL <= DE_EX.SRC_A_SEL; 
+            EX_MEM.SRC_B_SEL <= DE_EX.SRC_B_SEL; 
+            EX_MEM.REG_WRITE <= DE_EX.REG_WRITE;
+            EX_MEM.MEM_WRITE <= DE_EX.MEM_WRITE;
+            EX_MEM.MEM_READ <= DE_EX.MEM_READ;
+            EX_MEM.RF_MUX_SEL <= DE_EX.RF_MUX_SEL;
+            EX_MEM.ALU_CTRL <= DE_EX.ALU_CTRL;
+            EX_MEM.SRC_A_SEL <= DE_EX.SRC_A_SEL; 
+            EX_MEM.SRC_B_SEL <= DE_EX.SRC_B_SEL;
+            EX_MEM.RS1 <= DE_EX.RS1;
+            EX_MEM.RS2 <= DE_EX.RS2;
+            EX_MEM.DEST_REG <= DE_EX.DEST_REG;
+            //EX_MEM.DIN2 <= din2;
+            EX_MEM.PC_SEL <= DE_EX.PC_SEL;
+
+            MEM_WB.PC <= EX_MEM.PC;
+            MEM_WB.NEXT_PC <= EX_MEM.NEXT_PC;
+            MEM_WB.ERR <= memerr;
+            MEM_WB.SRC_A_SEL <= EX_MEM.SRC_A_SEL; 
+            MEM_WB.SRC_B_SEL <= EX_MEM.SRC_B_SEL;
+            MEM_WB.REG_WRITE <= EX_MEM.REG_WRITE;
+            MEM_WB.MEM_WRITE <= EX_MEM.MEM_WRITE;
+            MEM_WB.MEM_READ <= EX_MEM.MEM_READ;
+            MEM_WB.RF_MUX_SEL <= EX_MEM.RF_MUX_SEL;
+            MEM_WB.ALU_CTRL <= EX_MEM.ALU_CTRL;
+            MEM_WB.SRC_A_SEL <= EX_MEM.SRC_A_SEL; 
+            MEM_WB.SRC_B_SEL <= EX_MEM.SRC_B_SEL;
+            MEM_WB.RS1 <= EX_MEM.RS1;
+            MEM_WB.RS2 <= EX_MEM.RS2;
+            MEM_WB.DEST_REG <= EX_MEM.DEST_REG;
+            MEM_WB.ALU_RESULT <= EX_MEM.ALU_RESULT;
+            branch_addr <= BRANCH;
+        end
         else if(stall) begin
             FE_DE.IR <= FE_DE.IR;
             FE_DE.PC <= FE_DE.PC;
@@ -138,7 +179,7 @@ module OTTER(
             EX_MEM.RS1 <= DE_EX.RS1;
             EX_MEM.RS2 <= DE_EX.RS2;
             EX_MEM.DEST_REG <= DE_EX.DEST_REG;
-            EX_MEM.DIN2 <= din2;
+            //EX_MEM.DIN2 <= din2;
             EX_MEM.PC_SEL <= DE_EX.PC_SEL;
 
             MEM_WB.PC <= EX_MEM.PC;
@@ -158,6 +199,7 @@ module OTTER(
             MEM_WB.DEST_REG <= EX_MEM.DEST_REG;
             MEM_WB.ALU_RESULT <= EX_MEM.ALU_RESULT;
         end
+        
         else begin
             jalr_addr <= JALR;
             jal_addr <= JAL;
@@ -182,11 +224,11 @@ module OTTER(
             EX_MEM.RS1 <= DE_EX.RS1;
             EX_MEM.RS2 <= DE_EX.RS2;
             EX_MEM.DEST_REG <= DE_EX.DEST_REG;
-            EX_MEM.DIN2 <= din2;
             EX_MEM.BRANCH <= DE_EX.BRANCH;
             EX_MEM.BR_TYPE <= DE_EX.BR_TYPE;
             EX_MEM.JUMP <= DE_EX.JUMP;
             EX_MEM.PC_SEL <= DE_EX.PC_SEL;
+            //EX_MEM.DIN2 <= din2;
 
 
             MEM_WB.PC <= EX_MEM.PC;
@@ -240,6 +282,28 @@ module OTTER(
             DE_EX.JUMP <= 1'b0;
             DE_EX.PC_SEL <= 2'b00;
         end
+        else if (branch_taken) begin
+            DE_EX.IR <= FE_DE.IR;
+            DE_EX.PC <= FE_DE.PC;
+            DE_EX.NEXT_PC <= FE_DE.PC;
+            DE_EX.SRC_A_SEL <= src_a_sel;
+            DE_EX.SRC_B_SEL <= src_b_sel;
+            DE_EX.REG_WRITE <= regwrite;
+            DE_EX.MEM_WRITE <= memwrite;
+            DE_EX.MEM_READ <= memread;
+            DE_EX.RF_MUX_SEL <= rf_sel;
+            DE_EX.ALU_CTRL <= alu_ctrl;
+            DE_EX.SRC_A_SEL <= src_a_sel;
+            DE_EX.SRC_B_SEL <= src_b_sel;
+            DE_EX.BRANCH <= branch;
+            DE_EX.BR_TYPE <= br_type;
+            DE_EX.JUMP <= jump;
+            DE_EX.RS1 <= rs1;
+            DE_EX.RS2 <= rs2;
+            DE_EX.DEST_REG <= FE_DE.IR[11:7];
+            DE_EX.IMM <= imm;
+            DE_EX.PC_SEL <= 2'b00;
+        end
         else begin
             DE_EX.IR <= FE_DE.IR;
             DE_EX.PC <= FE_DE.PC;
@@ -283,7 +347,7 @@ module OTTER(
         .MEM_ADDR1(pc_out),                 // ADDRESS OF INSTRUCTION
         .MEM_ADDR2(EX_MEM.ALU_RESULT),  // RESULT OF ALU
         .MEM_CLK(CLK),                  // CLK
-        .MEM_DIN2(EX_MEM.DIN2),          // **WILL NEED TO CHANGE FOR HAZARDS
+        .MEM_DIN2(din2),          // **WILL NEED TO CHANGE FOR HAZARDS
         .MEM_WRITE2(EX_MEM.MEM_WRITE),  // MEM_WRITE COMPUTED IN
         .MEM_READ1(1'b1),
         .MEM_READ2(EX_MEM.MEM_READ),
@@ -312,7 +376,7 @@ module OTTER(
 
     assign JAL = DE_EX.PC + DE_EX.IMM;
     assign JALR = (DE_EX.IMM + fwd_a_out) & ~1;
-    assign BRANCH = DE_EX.NEXT_PC + DE_EX.IMM;
+    assign BRANCH = DE_EX.PC + DE_EX.IMM;
 
     MUX4T1 PC_MUX(
 

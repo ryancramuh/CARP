@@ -46,7 +46,7 @@ module tb_OTTER();
     
     always begin
         #200 RST = 1'b0;
-      #100000 
+        #1000 
             $finish;
     end
      
