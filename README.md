@@ -1,3 +1,3 @@
-# OPIFEX
+## IRIS-V
+Integrated Reconfigurable Instruction Stream for RISC-V
 
-An interesting RISC-V Pipelined Architecture.
