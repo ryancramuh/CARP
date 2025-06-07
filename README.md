@@ -1,2 +1,3 @@
-# CARP
-Computer Architecture Research Project
+# OPIFEX
+
+An interesting RISC-V Pipelined Architecture.
